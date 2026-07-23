@@ -1,0 +1,11 @@
+{
+  "name": "adguard-combined",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "mkdir -p dist && hostlist-compiler -c configuration.json -o dist/combined.txt"
+  },
+  "devDependencies": {
+    "@adguard/hostlist-compiler": "2.1.0"
+  }
+}
