@@ -97,6 +97,7 @@ jobs:
           fi
 
           gh release upload blocklist-latest \
+            dist/combined.txt \
             dist/combined.txt.gz \
             dist/combined.txt.gz.sha256 \
             --clobber
