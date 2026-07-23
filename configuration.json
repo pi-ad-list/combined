@@ -1,0 +1,200 @@
+{
+  "name": "Private Combined AdGuard DNS Blocklist",
+  "description": "Combined, validated, compressed and deduplicated DNS blocklist.",
+  "sources": [
+    {
+      "name": "AdGuard DNS filter",
+      "source": "https://adguardteam.github.io/AdGuardSDNSFilter/Filters/filter.txt"
+    },
+    {
+      "name": "AdAway Default Blocklist",
+      "source": "https://adaway.org/hosts.txt"
+    },
+    {
+      "name": "Steven Black",
+      "source": "https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts"
+    },
+    {
+      "name": "Dandelion Anti-Malware AdGuard Home",
+      "source": "https://raw.githubusercontent.com/DandelionSprout/adfilt/master/Alternate%20versions%20Anti-Malware%20List/AntiMalwareAdGuardHome.txt"
+    },
+    {
+      "name": "Dandelion Anti-Malware Hosts",
+      "source": "https://raw.githubusercontent.com/DandelionSprout/adfilt/master/Alternate%20versions%20Anti-Malware%20List/AntiMalwareHosts.txt"
+    },
+    {
+      "name": "Disconnect Malvertising",
+      "source": "https://s3.amazonaws.com/lists.disconnect.me/simple_malvertising.txt"
+    },
+    {
+      "name": "Prigent Crypto",
+      "source": "https://v.firebog.net/hosts/Prigent-Crypto.txt"
+    },
+    {
+      "name": "Konspiratori",
+      "source": "https://konspiratori.sk/static/lists/zoznam_bez_score.txt"
+    },
+    {
+      "name": "AdGuard Base Adservers",
+      "source": "https://adguardteam.github.io/AdguardFilters/BaseFilter/sections/adservers.txt"
+    },
+    {
+      "name": "AdGuard Mobile Adservers",
+      "source": "https://adguardteam.github.io/AdguardFilters/MobileFilter/sections/adservers.txt"
+    },
+    {
+      "name": "AdGuard First-Party Adservers",
+      "source": "https://adguardteam.github.io/AdguardFilters/BaseFilter/sections/adservers_firstparty.txt"
+    },
+    {
+      "name": "OISD Big",
+      "source": "downloads/oisd-big.txt"
+    },
+    {
+      "name": "Phishing Army Extended",
+      "source": "https://phishing.army/download/phishing_army_blocklist_extended.txt"
+    },
+    {
+      "name": "Polish KADhosts",
+      "source": "https://raw.githubusercontent.com/PolishFiltersTeam/KADhosts/master/KADhosts.txt"
+    },
+    {
+      "name": "FadeMind Spam",
+      "source": "https://raw.githubusercontent.com/FadeMind/hosts.extras/master/add.Spam/hosts"
+    },
+    {
+      "name": "Matomo Referrer Spam",
+      "source": "https://raw.githubusercontent.com/matomo-org/referrer-spam-blacklist/master/spammers.txt"
+    },
+    {
+      "name": "EasyPrivacy",
+      "source": "https://v.firebog.net/hosts/Easyprivacy.txt"
+    },
+    {
+      "name": "Prigent Ads",
+      "source": "https://v.firebog.net/hosts/Prigent-Ads.txt"
+    },
+    {
+      "name": "FadeMind 2o7Net",
+      "source": "https://raw.githubusercontent.com/FadeMind/hosts.extras/master/add.2o7Net/hosts"
+    },
+    {
+      "name": "RPi Malware",
+      "source": "https://v.firebog.net/hosts/RPiList-Malware.txt"
+    },
+    {
+      "name": "RPi Phishing",
+      "source": "https://v.firebog.net/hosts/RPiList-Phishing.txt"
+    },
+    {
+      "name": "Czech and Slovak",
+      "source": "https://raw.githubusercontent.com/tomasko126/easylistczechandslovak/master/filters.txt"
+    },
+    {
+      "name": "NoTrack Malware",
+      "source": "https://gitlab.com/quidsup/notrack-blocklists/raw/master/notrack-malware.txt"
+    },
+    {
+      "name": "Spam404",
+      "source": "https://raw.githubusercontent.com/Spam404/lists/master/main-blacklist.txt"
+    },
+    {
+      "name": "Windows Spy Blocker",
+      "source": "https://raw.githubusercontent.com/crazy-max/WindowsSpyBlocker/master/data/hosts/spy.txt"
+    },
+    {
+      "name": "NoTrack Blocklist",
+      "source": "https://gitlab.com/quidsup/notrack-blocklists/raw/master/notrack-blocklist.txt"
+    },
+    {
+      "name": "First-Party Trackers",
+      "source": "https://hostfiles.frogeye.fr/firstparty-trackers-hosts.txt"
+    },
+    {
+      "name": "CERT Polska",
+      "source": "https://hole.cert.pl/domains/domains.txt"
+    },
+    {
+      "name": "URLhaus",
+      "source": "https://urlhaus.abuse.ch/downloads/hostfile/"
+    },
+    {
+      "name": "Perflyst Smart TV",
+      "source": "https://perflyst.github.io/PiHoleBlocklist/SmartTV.txt"
+    },
+    {
+      "name": "Game Console Adblock",
+      "source": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_6.txt"
+    },
+    {
+      "name": "AdRules DNS",
+      "source": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_29.txt"
+    },
+    {
+      "name": "Anti-AD",
+      "source": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_21.txt"
+    },
+    {
+      "name": "HaGeZi Threat Intelligence Feeds",
+      "source": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_44.txt"
+    },
+    {
+      "name": "HaGeZi DynDNS",
+      "source": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_54.txt"
+    },
+    {
+      "name": "Stalkerware Indicators",
+      "source": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_31.txt"
+    },
+    {
+      "name": "HaGeZi Abused TLDs",
+      "source": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_56.txt"
+    },
+    {
+      "name": "YousList",
+      "source": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_15.txt"
+    },
+    {
+      "name": "List-KR DNS",
+      "source": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_25.txt"
+    },
+    {
+      "name": "Ukrainian Security Filter",
+      "source": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_62.txt"
+    },
+    {
+      "name": "DurableNapkin Scam Blocklist",
+      "source": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_10.txt"
+    },
+    {
+      "name": "Smart-TV Blocklist",
+      "source": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_7.txt"
+    },
+    {
+      "name": "Anti Push Notifications",
+      "source": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_39.txt"
+    },
+    {
+      "name": "Dandelion Anti-Malware",
+      "source": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_12.txt"
+    },
+    {
+      "name": "Hacked Malware Websites",
+      "source": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_9.txt"
+    },
+    {
+      "name": "PhishTank and OpenPhish",
+      "source": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_30.txt"
+    }
+  ],
+  "transformations": [
+    "ConvertToAscii",
+    "TrimLines",
+    "RemoveComments",
+    "Compress",
+    "ValidateAllowIpAndPublicSuffix",
+    "Deduplicate",
+    "RemoveEmptyLines",
+    "InsertFinalNewLine"
+  ]
+}
