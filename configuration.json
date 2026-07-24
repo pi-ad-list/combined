@@ -11,10 +11,6 @@
       "source": "https://raw.githubusercontent.com/hagezi/nrd/main/adblock/nrd7.txt"
     },
     {
-      "name": "Newly reg - 14",
-      "source": "https://raw.githubusercontent.com/hagezi/nrd/main/adblock/nrd14-8.txt"
-    },
-    {
       "name": "AdAway Default Blocklist",
       "source": "https://adaway.org/hosts.txt"
     },
