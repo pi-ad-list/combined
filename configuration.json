@@ -139,8 +139,20 @@
       "source": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_44.txt"
     },
     {
+      "name": "HaGeZi Threat Intelligence Feeds - main",
+      "source": "https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/adblock/tif.txt"
+    },
+     {
+      "name": "Badware Hoster blocking",
+      "source": "https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/adblock/hoster.txt"
+    },
+    {
       "name": "HaGeZi DynDNS",
       "source": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_54.txt"
+    },
+     {
+      "name": "HaGeZi Popup",
+      "source": "https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/adblock/popupads.txt"
     },
     {
       "name": "Stalkerware Indicators",
