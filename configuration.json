@@ -1,5 +1,5 @@
 {
-  "name": "Private Combined AdGuard DNS Blocklist",
+  "name": "Combined AdGuard DNS Blocklist",
   "description": "Combined, validated, compressed and deduplicated DNS blocklist.",
   "sources": [
     {
@@ -116,7 +116,11 @@
     },
     {
       "name": "URLhaus",
-      "source": "https://urlhaus.abuse.ch/downloads/hostfile/"
+      "source": "downloads/urlhaus-hostfile.txt"
+    },
+    {
+      "name": "ThreatFox",
+      "source": "downloads/threatfox-hostfile.txt"
     },
     {
       "name": "Perflyst Smart TV",
@@ -142,7 +146,7 @@
       "name": "HaGeZi Threat Intelligence Feeds - main",
       "source": "https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/adblock/tif.txt"
     },
-     {
+    {
       "name": "Badware Hoster blocking",
       "source": "https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/adblock/hoster.txt"
     },
@@ -150,7 +154,7 @@
       "name": "HaGeZi DynDNS",
       "source": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_54.txt"
     },
-     {
+    {
       "name": "HaGeZi Popup",
       "source": "https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/adblock/popupads.txt"
     },
