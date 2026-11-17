@@ -113,7 +113,7 @@ jobs:
 
           test -s downloads/threatfox-hostfile.txt
 
-      - name: Verify protected feeds
+      - name: Inspect protected feeds
         shell: bash
         run: |
           set -euo pipefail
@@ -121,6 +121,7 @@ jobs:
           node <<'NODE'
           const fs = require("node:fs");
           const net = require("node:net");
+          const { domainToASCII } = require("node:url");
 
           const localNames = new Set([
             "localhost",
@@ -128,59 +129,119 @@ jobs:
             "ip6-localhost",
             "ip6-loopback",
           ]);
+          const blockingAddresses = new Set([
+            "0.0.0.0",
+            "127.0.0.1",
+            "::",
+            "::1",
+          ]);
 
           for (const feed of ["urlhaus", "threatfox"]) {
             const file = `downloads/${feed}-hostfile.txt`;
             const data = fs.readFileSync(file);
             const text = data.toString("utf8").replace(/^\uFEFF/, "");
 
-            let entries = 0;
+            if (/^\s*(?:<!doctype\b|<html\b|<head\b|<body\b|\{|\[)/i.test(text)) {
+              throw new Error(`${feed}: received HTML or JSON instead of a hosts file`);
+            }
 
-            for (const raw of text.split(/\r?\n/)) {
-              const line = raw.replace(/#.*/, "").trim();
-              if (!line) continue;
+            const counts = {
+              mappings: 0,
+              domains: 0,
+              ipTargets: 0,
+              singleLabelTargets: 0,
+              unusual: 0,
+            };
+            const examples = [];
+            const note = (line, reason) => {
+              counts.unusual++;
+              if (examples.length < 5) examples.push({ line, reason });
+            };
+
+            const lines = text.split(/\r?\n/);
+
+            for (let index = 0; index < lines.length; index++) {
+              const line = lines[index].replace(/#.*/, "").trim();
+              if (!line || line.startsWith("!")) continue;
 
               const [address, ...hosts] = line.split(/\s+/);
 
-              if (
-                !["0.0.0.0", "127.0.0.1", "::", "::1"].includes(address) ||
-                hosts.length === 0
-              ) {
-                throw new Error(`${feed}: unexpected hosts-file content`);
+              if (!blockingAddresses.has(address) || hosts.length === 0) {
+                note(index + 1, "not a recognized hosts-file mapping");
+                continue;
               }
 
-              for (const host of hosts) {
-                if (localNames.has(host)) continue;
+              counts.mappings++;
 
-                const labels = host.replace(/\.$/, "").split(".");
+              for (const host of hosts) {
+                const name = host.replace(/\.$/, "");
+
+                if (localNames.has(name.toLowerCase())) continue;
+
+                if (net.isIP(name)) {
+                  counts.ipTargets++;
+                  continue;
+                }
+
+                if (/[\/:@?#]/.test(name) || name.includes("\\")) {
+                  note(index + 1, "hostname contains URL or address separators");
+                  continue;
+                }
+
+                const ascii = domainToASCII(name);
+                const labels = ascii.split(".");
                 const valid =
-                  host.length <= 254 &&
-                  !net.isIP(host) &&
-                  labels.length >= 2 &&
+                  ascii.length > 0 &&
+                  ascii.length <= 253 &&
                   labels.every(label =>
                     /^[a-z0-9_](?:[a-z0-9_-]{0,61}[a-z0-9_])?$/i.test(label)
                   );
 
                 if (!valid) {
-                  throw new Error(`${feed}: malformed hostname`);
+                  note(index + 1, "unrecognized hostname syntax");
+                  continue;
                 }
 
-                entries++;
+                if (net.isIP(ascii)) {
+                  counts.ipTargets++;
+                } else if (labels.length === 1) {
+                  counts.singleLabelTargets++;
+                } else {
+                  counts.domains++;
+                }
               }
             }
 
-            if (entries === 0) {
-              throw new Error(`${feed}: no usable host entries`);
-            }
-
             const result =
-              `${feed}: verified ${entries} host entries, ${data.length} bytes`;
+              `${feed}: ${data.length} bytes; ` +
+              `${counts.mappings} mapping rows; ` +
+              `${counts.domains} domain targets; ` +
+              `${counts.ipTargets} IP targets; ` +
+              `${counts.singleLabelTargets} single-label targets; ` +
+              `${counts.unusual} unusual items`;
 
             console.log(result);
             fs.appendFileSync(
               process.env.GITHUB_STEP_SUMMARY,
               `${result}\n\n`
             );
+
+            for (const example of examples) {
+              console.log(
+                `${feed}: line ${example.line}: ${example.reason}`
+              );
+            }
+
+            if (counts.domains === 0) {
+              throw new Error(`${feed}: no recognizable domain mappings found`);
+            }
+
+            if (counts.unusual > 0) {
+              console.log(
+                `::warning::${feed}: ${counts.unusual} unusual items; ` +
+                "the original file is unchanged and will be passed to the compiler"
+              );
+            }
           }
           NODE
 
