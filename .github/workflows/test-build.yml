@@ -61,37 +61,128 @@ jobs:
           : "${ABUSECH_AUTH_KEY:?Missing ABUSECH_AUTH_KEY secret}"
           mkdir -p downloads
 
-          curl \
-            --proto '=https' \
-            --proto-redir '=https' \
-            --tlsv1.2 \
-            --fail \
-            --silent \
-            --show-error \
-            --location \
-            --retry 3 \
-            --connect-timeout 20 \
-            --max-time 300 \
-            --output downloads/urlhaus-hostfile.txt \
-            "https://urlhaus-api.abuse.ch/v2/files/exports/${ABUSECH_AUTH_KEY}/hostfile.txt"
+          urlhaus_status="$(
+            curl \
+              --proto '=https' \
+              --proto-redir '=https' \
+              --tlsv1.2 \
+              --fail \
+              --silent \
+              --show-error \
+              --location \
+              --retry 3 \
+              --connect-timeout 20 \
+              --max-time 300 \
+              --write-out '%{http_code}' \
+              --output downloads/urlhaus-hostfile.txt \
+              "https://urlhaus-api.abuse.ch/v2/files/exports/${ABUSECH_AUTH_KEY}/hostfile.txt"
+          )"
+
+          echo "URLhaus: HTTP ${urlhaus_status}"
+
+          if [ "$urlhaus_status" != "200" ]; then
+            echo "::error::URLhaus did not return HTTP 200"
+            exit 1
+          fi
 
           test -s downloads/urlhaus-hostfile.txt
 
-          curl \
-            --proto '=https' \
-            --proto-redir '=https' \
-            --tlsv1.2 \
-            --fail \
-            --silent \
-            --show-error \
-            --location \
-            --retry 3 \
-            --connect-timeout 20 \
-            --max-time 300 \
-            --output downloads/threatfox-hostfile.txt \
-            "https://threatfox-api.abuse.ch/v2/files/exports/${ABUSECH_AUTH_KEY}/hostfile.txt"
+          threatfox_status="$(
+            curl \
+              --proto '=https' \
+              --proto-redir '=https' \
+              --tlsv1.2 \
+              --fail \
+              --silent \
+              --show-error \
+              --location \
+              --retry 3 \
+              --connect-timeout 20 \
+              --max-time 300 \
+              --write-out '%{http_code}' \
+              --output downloads/threatfox-hostfile.txt \
+              "https://threatfox-api.abuse.ch/v2/files/exports/${ABUSECH_AUTH_KEY}/hostfile.txt"
+          )"
+
+          echo "ThreatFox: HTTP ${threatfox_status}"
+
+          if [ "$threatfox_status" != "200" ]; then
+            echo "::error::ThreatFox did not return HTTP 200"
+            exit 1
+          fi
 
           test -s downloads/threatfox-hostfile.txt
+
+      - name: Verify protected feeds
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          node <<'NODE'
+          const fs = require("node:fs");
+          const net = require("node:net");
+
+          const localNames = new Set([
+            "localhost",
+            "localhost.localdomain",
+            "ip6-localhost",
+            "ip6-loopback",
+          ]);
+
+          for (const feed of ["urlhaus", "threatfox"]) {
+            const file = `downloads/${feed}-hostfile.txt`;
+            const data = fs.readFileSync(file);
+            const text = data.toString("utf8").replace(/^\uFEFF/, "");
+
+            let entries = 0;
+
+            for (const raw of text.split(/\r?\n/)) {
+              const line = raw.replace(/#.*/, "").trim();
+              if (!line) continue;
+
+              const [address, ...hosts] = line.split(/\s+/);
+
+              if (
+                !["0.0.0.0", "127.0.0.1", "::", "::1"].includes(address) ||
+                hosts.length === 0
+              ) {
+                throw new Error(`${feed}: unexpected hosts-file content`);
+              }
+
+              for (const host of hosts) {
+                if (localNames.has(host)) continue;
+
+                const labels = host.replace(/\.$/, "").split(".");
+                const valid =
+                  host.length <= 254 &&
+                  !net.isIP(host) &&
+                  labels.length >= 2 &&
+                  labels.every(label =>
+                    /^[a-z0-9_](?:[a-z0-9_-]{0,61}[a-z0-9_])?$/i.test(label)
+                  );
+
+                if (!valid) {
+                  throw new Error(`${feed}: malformed hostname`);
+                }
+
+                entries++;
+              }
+            }
+
+            if (entries === 0) {
+              throw new Error(`${feed}: no usable host entries`);
+            }
+
+            const result =
+              `${feed}: verified ${entries} host entries, ${data.length} bytes`;
+
+            console.log(result);
+            fs.appendFileSync(
+              process.env.GITHUB_STEP_SUMMARY,
+              `${result}\n\n`
+            );
+          }
+          NODE
 
       - name: Compile lists
         shell: bash
@@ -103,7 +194,12 @@ jobs:
             exit 1
           fi
 
-          tail -n 20 compiler.log
+          echo "Source counts and transformation results:"
+
+          grep -E \
+            'Start compiling|Original length|Length after applying transformations|Compress|Deduplication|Final length' \
+            compiler.log
+
           test -s dist/combined.txt
 
       - name: Compress and verify output
@@ -122,9 +218,12 @@ jobs:
             echo "output_lines=$(wc -l < dist/combined.txt)"
             echo "compressed_bytes=$(wc -c < dist/combined.txt.gz)"
             echo "sha256=$(sha256sum dist/combined.txt | cut -d' ' -f1)"
+            echo
+            echo "Publishing is disabled while investigating the rule-count decrease."
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Publish release
+        if: ${{ false }}
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
